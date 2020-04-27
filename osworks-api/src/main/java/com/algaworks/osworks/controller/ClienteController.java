@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.algaworks.osworks.domain.model.Cliente;
 import com.algaworks.osworks.domain.repository.ClienteRepository;
+import com.algaworks.osworks.domain.service.CadastroClienteService;
 
 @RestController
 @RequestMapping("/clientes")
@@ -27,6 +28,9 @@ public class ClienteController {
 	
 	@Autowired
 	private ClienteRepository clienteRepository;
+	
+	@Autowired
+	private CadastroClienteService cadastroCliente;
 	
 	@GetMapping
 	public List<Cliente> listar() {
@@ -47,12 +51,12 @@ public class ClienteController {
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public Cliente adicionar(@Valid @RequestBody Cliente cliente) {
-		return clienteRepository.save(cliente);
+		return cadastroCliente.salvar(cliente);
 		
 	}
 	
 	@PutMapping("{id}")
-	public ResponseEntity<Cliente> atualizar(@PathVariable Long id, 
+	public ResponseEntity<Cliente> atualizar(@Valid @PathVariable Long id, 
 			@RequestBody Cliente cliente){
 		
 		if(!clienteRepository.existsById(id)) {
@@ -60,7 +64,7 @@ public class ClienteController {
 		}
 		
 		cliente.setId(id);
-		clienteRepository.save(cliente);
+		cadastroCliente.salvar(cliente);
 		return ResponseEntity.ok(cliente);
 		
 	}
@@ -71,7 +75,7 @@ public class ClienteController {
 			return ResponseEntity.notFound().build();
 		}
 		
-		clienteRepository.deleteById(id);
+		cadastroCliente.excluir(id);
 		
 		return ResponseEntity.noContent().build();
 	}
